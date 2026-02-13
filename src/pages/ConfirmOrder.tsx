@@ -94,10 +94,19 @@ export const ConfirmOrder: React.FC<ConfirmOrderProps> = ({
         };
 
         const requestId = await createRide(foodRequest as any);
-        localStorage.setItem('currentFoodOrderId', requestId);
+        localStorage.setItem('currentRideId', requestId);
 
         setIsLoading(false);
-        navigate('/food-waiting-driver', { state: { orderId: requestId } });
+        navigate('/waiting-for-driver', {
+          state: {
+            requestType: 'food',
+            foodItems,
+            foodSubtotal,
+            deliveryFee,
+            deliveryMode: selectedDeliveryType,
+            requestId
+          }
+        });
       } else {
         const rideRequest = {
           pickup,

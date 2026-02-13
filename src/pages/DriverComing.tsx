@@ -23,6 +23,11 @@ interface DriverComingProps {
   price: number;
   currentRideId: string | null;
   onBack: () => void;
+  requestType?: 'ride' | 'food';
+  deliveryMode?: 'car' | 'motorbike' | 'bicycle';
+  foodItems?: any[];
+  foodSubtotal?: number;
+  deliveryFee?: number;
 }
 
 interface DriverInfo {
@@ -46,12 +51,19 @@ export const DriverComing: React.FC<DriverComingProps> = ({
   carType,
   price,
   currentRideId,
-  onBack
+  onBack,
+  requestType = 'ride',
+  deliveryMode,
+  foodItems = [],
+  foodSubtotal = 0,
+  deliveryFee = 0
 }) => {
   const navigate = useNavigate();
   const { profile } = useUserProfile();
   const { currentRide } = useFirebaseRide(currentRideId);
   const { unreadMessageCount, markMessagesAsRead } = useMessageContext();
+
+  const isFood = requestType === 'food';
 
   const [driverInfo, setDriverInfo] = useState<DriverInfo | null>(null);
   const [rideStatus, setRideStatus] = useState<string>('accepted');
@@ -312,6 +324,42 @@ export const DriverComing: React.FC<DriverComingProps> = ({
                 </div>
               </motion.div>
 
+              {/* Food items (if food) */}
+              {isFood && foodItems.length > 0 && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                  <h3 className="font-semibold text-gray-900 mb-3">Your Order</h3>
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                    {foodItems.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center text-sm">
+                        <span className="text-gray-700">{item.name}</span>
+                        <span className="font-medium text-gray-900">R {item.price}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Food pricing breakdown (if food) */}
+              {isFood && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                  <h3 className="font-semibold text-gray-900 mb-3">Pricing</h3>
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Food subtotal</span>
+                      <span className="font-medium text-gray-900">R {foodSubtotal}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Delivery fee ({deliveryMode})</span>
+                      <span className="font-medium text-gray-900">R {deliveryFee}</span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t border-gray-200">
+                      <span className="font-bold text-gray-900">Total</span>
+                      <span className="font-bold text-green-600">R {price}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <h3 className="font-semibold text-gray-900 mb-3">Payment method</h3>
                 <div className="bg-gray-50 rounded-xl p-4">
@@ -320,7 +368,7 @@ export const DriverComing: React.FC<DriverComingProps> = ({
                       <CreditCard className="text-green-600" size={20} />
                       <div>
                         <p className="font-medium text-gray-900">Cash</p>
-                        <p className="text-sm text-gray-500">Fare • {carType}</p>
+                        <p className="text-sm text-gray-500">{isFood ? `Delivery • ${deliveryMode}` : `Fare • ${carType}`}</p>
                       </div>
                     </div>
                     <span className="font-bold text-gray-900">R {finalPrice}</span>
@@ -405,6 +453,7 @@ export const DriverComing: React.FC<DriverComingProps> = ({
         driverName={driverInfo.name}
         driverPhoto={driverInfo.photo}
         onSubmitRating={handleSubmitRating}
+        requestType={requestType}
       />
     </div>
   );

@@ -21,6 +21,11 @@ interface WaitingForDriverProps {
   currentRideId: string | null;
   onCancel: () => void;
   onDriverFound: () => void;
+  requestType?: 'ride' | 'food';
+  deliveryMode?: 'car' | 'motorbike' | 'bicycle';
+  foodItems?: any[];
+  foodSubtotal?: number;
+  deliveryFee?: number;
 }
 
 export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
@@ -31,7 +36,12 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
   price,
   currentRideId,
   onCancel,
-  onDriverFound
+  onDriverFound,
+  requestType = 'ride',
+  deliveryMode,
+  foodItems = [],
+  foodSubtotal = 0,
+  deliveryFee = 0
 }) => {
   const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
@@ -40,6 +50,8 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
   const [isScanning, setIsScanning] = useState(true);
   const { createRide, currentRide, isLoading, isAccepted } = useFirebaseRide(currentRideId);
   const { profile } = useUserProfile();
+
+  const isFood = requestType === 'food';
   
   // Recalculate price to ensure consistency
   const priceCalculation = calculatePriceWithStops(pickup, destination, stops);
@@ -189,7 +201,7 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
             transition={{ delay: 0.2 }}
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Waiting for driver to confirm the order
+              {isFood ? 'Waiting for delivery driver' : 'Waiting for driver to confirm the order'}
             </h2>
             
             {/* Progress bar */}
@@ -292,11 +304,55 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
                 </div>
               </motion.div>
 
+              {/* Food items (if food) */}
+              {isFood && foodItems.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <h3 className="font-semibold text-gray-900 mb-3">Your Order</h3>
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                    {foodItems.map((item, index) => (
+                      <div key={index} className="flex justify-between items-center text-sm">
+                        <span className="text-gray-700">{item.name}</span>
+                        <span className="font-medium text-gray-900">R {item.price}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Food pricing breakdown (if food) */}
+              {isFood && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.85 }}
+                >
+                  <h3 className="font-semibold text-gray-900 mb-3">Pricing</h3>
+                  <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Food subtotal</span>
+                      <span className="font-medium text-gray-900">R {foodSubtotal}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Delivery fee ({deliveryMode})</span>
+                      <span className="font-medium text-gray-900">R {deliveryFee}</span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t border-gray-200">
+                      <span className="font-bold text-gray-900">Total</span>
+                      <span className="font-bold text-green-600">R {price}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Payment method */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: isFood ? 0.9 : 0.8 }}
               >
                 <h3 className="font-semibold text-gray-900 mb-3">Payment method</h3>
                 <div className="bg-gray-50 rounded-xl p-4">
@@ -307,7 +363,7 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">Cash</p>
-                        <p className="text-sm text-gray-500">Fare • {carType}</p>
+                        <p className="text-sm text-gray-500">{isFood ? `Delivery • ${deliveryMode}` : `Fare • ${carType}`}</p>
                       </div>
                     </div>
                     <span className="font-bold text-gray-900">R {finalPrice}</span>

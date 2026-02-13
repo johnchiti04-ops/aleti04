@@ -22,8 +22,6 @@ import { FoodDelivery } from './pages/FoodDelivery';
 import { FoodPayment } from './pages/FoodPayment';
 import { FoodAddCard } from './pages/FoodAddCard';
 import { FoodMobileMoneyPage } from './pages/FoodMobileMoneyPage';
-import { FoodWaitingDriver } from './pages/FoodWaitingDriver';
-import { FoodDriverComing } from './pages/FoodDriverComing';
 import { MessageProvider } from './contexts/MessageContext';
 import { RideProvider } from './contexts/RideContext';
 import { FoodOrderSessionProvider } from './contexts/FoodOrderSession';
@@ -347,14 +345,6 @@ function AppContent() {
             <Route
               path="/food-mobile-money"
               element={<FoodMobileMoneyPage />}
-            />
-            <Route
-              path="/food-waiting-driver"
-              element={<FoodWaitingDriver />}
-            />
-            <Route
-              path="/food-driver-coming"
-              element={<FoodDriverComing />}
             />
             <Route
               path="/select-ride"
