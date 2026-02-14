@@ -10,7 +10,7 @@ export const useFirebaseRide = (rideId?: string | null) => {
   useEffect(() => {
     if (!rideId) return;
 
-    const unsubscribe = firebaseService.listenToRiderequest(rideId, (ride) => {
+    const unsubscribe = firebaseService.listenToRideRequest(rideId, (ride) => {
       if (ride) {
         setCurrentRide(ride);
 
