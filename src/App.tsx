@@ -67,7 +67,6 @@ function AppContent() {
     const rideId = localStorage.getItem('currentRideId');
     if (rideId) {
       setAppState(prev => ({ ...prev, currentRideId: rideId }));
-      navigate('/driver-coming');
     }
   }, []);
 
@@ -77,7 +76,6 @@ function AppContent() {
       const rideId = localStorage.getItem('currentRideId');
       if (rideId) {
         setAppState(prev => ({ ...prev, currentRideId: rideId }));
-        navigate('/driver-coming');
       }
     };
 
@@ -173,9 +171,12 @@ function AppContent() {
   };
 
   const handleDriverFound = (rideId?: string) => {
+    console.log('[App] handleDriverFound called with rideId:', rideId);
     if (rideId) {
       setAppState(prev => ({ ...prev, currentRideId: rideId }));
     }
+    const finalRideId = rideId || localStorage.getItem('currentRideId');
+    console.log('[App] Final rideId for driver-coming:', finalRideId);
     navigate('/driver-coming');
   };
 

@@ -94,7 +94,9 @@ export const ConfirmOrder: React.FC<ConfirmOrderProps> = ({
         };
 
         const requestId = await createRide(foodRequest as any);
+        console.log('[ConfirmOrder] Food request created with ID:', requestId);
         localStorage.setItem('currentRideId', requestId);
+        console.log('[ConfirmOrder] Stored to localStorage:', localStorage.getItem('currentRideId'));
 
         setIsLoading(false);
         navigate('/waiting-for-driver', {
@@ -120,6 +122,9 @@ export const ConfirmOrder: React.FC<ConfirmOrderProps> = ({
         };
 
         const rideId = await createRide(rideRequest);
+        console.log('[ConfirmOrder] Ride request created with ID:', rideId);
+        localStorage.setItem('currentRideId', rideId);
+        console.log('[ConfirmOrder] Stored to localStorage:', localStorage.getItem('currentRideId'));
 
         if (propOnRideCreated) {
           propOnRideCreated(rideId);

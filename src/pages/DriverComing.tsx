@@ -60,7 +60,13 @@ export const DriverComing: React.FC<DriverComingProps> = ({
 }) => {
   const navigate = useNavigate();
   const { profile } = useUserProfile();
-  const { currentRide } = useFirebaseRide(currentRideId);
+
+  const effectiveRideId = currentRideId || localStorage.getItem('currentRideId');
+  console.log('[DriverComing] Prop currentRideId:', currentRideId);
+  console.log('[DriverComing] Effective rideId:', effectiveRideId);
+  console.log('[DriverComing] Request type:', requestType);
+
+  const { currentRide } = useFirebaseRide(effectiveRideId);
   const { unreadMessageCount, markMessagesAsRead } = useMessageContext();
 
   const isFood = requestType === 'food';

@@ -48,7 +48,13 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
   const [showNoDriverPopup, setShowNoDriverPopup] = useState(false);
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [isScanning, setIsScanning] = useState(true);
-  const { createRide, currentRide, isLoading, isAccepted } = useFirebaseRide(currentRideId);
+
+  const effectiveRideId = currentRideId || localStorage.getItem('currentRideId');
+  console.log('[WaitingForDriver] Prop currentRideId:', currentRideId);
+  console.log('[WaitingForDriver] Effective rideId:', effectiveRideId);
+  console.log('[WaitingForDriver] Request type:', requestType);
+
+  const { createRide, currentRide, isLoading, isAccepted } = useFirebaseRide(effectiveRideId);
   const { profile } = useUserProfile();
 
   const isFood = requestType === 'food';
