@@ -9,7 +9,7 @@ import { MapBackground } from '../components/MapBackground';
 import { useFirebaseRide } from '../hooks/useFirebaseRide';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { calculatePriceWithStops, getCarTypePrice } from '../utils/priceCalculation';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { firebaseService } from '../services/firebaseService';
 
 interface WaitingForDriverProps {
@@ -44,20 +44,26 @@ export const WaitingForDriver: React.FC<WaitingForDriverProps> = ({
   deliveryFee = 0
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [progress, setProgress] = useState(0);
   const [showNoDriverPopup, setShowNoDriverPopup] = useState(false);
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [isScanning, setIsScanning] = useState(true);
 
-  const effectiveRideId = currentRideId || localStorage.getItem('currentRideId');
+  const state = (location.state as any) || {};
+  const stateRequestType = state.requestType || requestType;
+  const effectiveRideId = currentRideId || state.requestId || localStorage.getItem('currentRideId');
+
+  console.log('[WaitingForDriver] Location state:', state);
   console.log('[WaitingForDriver] Prop currentRideId:', currentRideId);
+  console.log('[WaitingForDriver] State requestId:', state.requestId);
   console.log('[WaitingForDriver] Effective rideId:', effectiveRideId);
-  console.log('[WaitingForDriver] Request type:', requestType);
+  console.log('[WaitingForDriver] Request type:', stateRequestType);
 
   const { createRide, currentRide, isLoading, isAccepted } = useFirebaseRide(effectiveRideId);
   const { profile } = useUserProfile();
 
-  const isFood = requestType === 'food';
+  const isFood = stateRequestType === 'food';
   
   // Recalculate price to ensure consistency
   const priceCalculation = calculatePriceWithStops(pickup, destination, stops);
